@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writchi - Your Writing Pet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app" class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="text-center mb-12">
+            <h1 class="text-6xl md:text-7xl font-bold">Writchi</h1>
+            <p class="text-xl mt-2 text-gray-600">Write for your Writchi!</p>
+            <div id="user-info-container" class="hidden mt-4 text-sm text-gray-500 items-center justify-center space-x-4">
+                <span id="user-email"></span>
+                <button id="logout-btn" class="btn btn-secondary !py-1 !px-3 text-xs">Logout</button>
+            </div>
+        </header>
+
+        <div id="auth-container" class="hidden max-w-sm mx-auto card p-8">
+            <form id="login-form">
+                <h2 class="text-3xl font-bold mb-6 text-center">Login</h2>
+                <div class="space-y-4">
+                    <input type="email" id="login-email" placeholder="Email" required class="w-full">
+                    <input type="password" id="login-password" placeholder="Password" required class="w-full">
+                    <button type="submit" class="w-full btn btn-primary !mt-6">Login</button>
+                </div>
+            </form>
+            <form id="signup-form" class="hidden">
+                <h2 class="text-3xl font-bold mb-6 text-center">Sign Up</h2>
+                <div class="space-y-4">
+                    <input type="email" id="signup-email" placeholder="Email" required class="w-full">
+                    <input type="password" id="signup-password" placeholder="Password" required class="w-full">
+                    <button type="submit" class="w-full btn btn-primary !mt-6">Create Account</button>
+                </div>
+            </form>
+            <div class="text-center my-4 text-gray-500">or</div>
+            <button id="google-signin-btn" class="w-full btn btn-secondary">
+                Sign in with Google
+            </button>
+            <p class="text-center mt-4 text-sm">
+                <a href="#" id="toggle-auth-link" class="text-gray-600 hover:underline">Need an account? Sign Up</a>
+            </p>
+        </div>
+
+        <div id="loading" class="text-center text-2xl text-gray-500">Connecting...</div>
+
+        <div id="create-pet-form" class="hidden max-w-lg mx-auto card p-8">
+            <h2 class="text-3xl font-bold mb-6">Create your Writchi</h2>
+            <div class="space-y-4">
+                <input type="text" id="owner-name" placeholder="Your Name" class="w-full">
+                <input type="text" id="pet-name" placeholder="Your Writchi's Name" class="w-full">
+                <h3 class="text-xl font-semibold pt-4">Choose a form:</h3>
+                <div id="pet-options" class="grid grid-cols-3 md:grid-cols-4 gap-2"></div>
+                <button id="create-btn" class="w-full btn btn-primary !mt-8">Bring to Life!</button>
+            </div>
+        </div>
+
+        <div id="main-display" class="hidden">
+            <div id="active-battle-status" class="mb-6"></div>
+            <div id="battle-notifications" class="mb-6 space-y-4"></div>
+            
+            <div id="user-pet-display" class="mb-6"></div>
+
+            <div class="text-center mb-8">
+                <button id="open-shop-btn" class="btn btn-primary text-xl">Item Shop</button>
+            </div>
+
+            <hr class="border-gray-200 my-12"/>
+            
+            <div class="text-center mb-6">
+                 <button id="open-community-btn" class="btn btn-secondary text-lg">
+                    See Community Calendar 🌎
+                 </button>
+            </div>
+
+            <div id="leaderboard-display" class="hidden card p-6 mb-8 max-w-2xl mx-auto"></div>
+
+            <h2 class="text-4xl font-bold text-center mb-8">Your Friends' Writchis</h2>
+            <div id="pets-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+    </div>
+
+    <div id="message-modal" class="modal-backdrop hidden">
+        <div class="modal-content w-11/12 max-w-sm text-center">
+            <p id="message-text" class="mb-4 text-2xl"></p>
+            <button id="message-ok-btn" class="btn btn-primary">OK</button>
+        </div>
+    </div>
+
+    <div id="history-modal" class="modal-backdrop hidden">
+        <div class="modal-content w-11/12 max-w-lg text-center">
+            <h2 class="text-3xl font-bold mb-4">Your Writing History</h2>
+            <p class="text-gray-500 mb-6">Click a day to toggle your stamp (no points awarded).</p>
+            
+            <div class="mb-4">
+                <h3 id="calendar-month" class="text-xl font-bold mb-2 text-left"></h3>
+                <div class="grid grid-cols-7 gap-2 mb-2 text-gray-400 text-sm font-bold">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
+            </div>
+
+            <button id="history-close-btn" class="btn btn-secondary mt-4">Close</button>
+        </div>
+    </div>
+
+    <div id="community-modal" class="modal-backdrop hidden">
+        <div class="modal-content w-11/12 max-w-lg text-center">
+            <h2 class="text-3xl font-bold mb-4">Community Activity</h2>
+            <p class="text-gray-500 mb-6">Look at everyone go! Click a day to see who wrote.</p>
+            
+            <div class="mb-4">
+                <h3 id="community-calendar-month" class="text-xl font-bold mb-2 text-left"></h3>
+                <div class="grid grid-cols-7 gap-2 mb-2 text-gray-400 text-sm font-bold">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                <div id="community-calendar-grid" class="grid grid-cols-7 gap-2"></div>
+            </div>
+
+            <button id="community-close-btn" class="btn btn-secondary mt-4">Close</button>
+        </div>
+    </div>
+
+    <div id="shop-modal" class="modal-backdrop hidden">
+        <div class="modal-content w-11/12 max-w-3xl">
+            <h2 class="text-4xl font-bold mb-4">Item Shop</h2>
+            <p class="mb-4 text-xl text-gray-500">Your Points: <span id="shop-points" class="font-semibold text-gray-800">0</span> WP</p>
+            <div id="shop-items" class="grid grid-cols-2 md:grid-cols-4 gap-4 max-h-[60vh] overflow-y-auto"></div>
+            <button id="shop-close-btn" class="btn btn-secondary mt-6">Close</button>
+        </div>
+    </div>
+
+    <div id="battle-modal" class="modal-backdrop hidden">
+        <div class="modal-content w-11/12 max-w-2xl text-center">
+            <button id="battle-close-btn" class="absolute top-4 right-5 text-3xl text-gray-400 hover:text-gray-700">&times;</button>
+            <h2 class="text-4xl font-bold mb-2">Word Count Sprint!</h2>
+            <p id="battle-opponent-info" class="text-lg text-gray-600 mb-4"></p>
+            <div id="battle-timer" class="text-6xl font-bold my-4">00:00</div>
+            <p class="text-gray-500">When the timer ends, paste your work below and submit!</p>
+            <textarea id="battle-textarea" class="w-full h-48 my-4" placeholder="Write like the wind!"></textarea>
+            <button id="battle-submit-btn" class="btn btn-primary w-full text-xl battle-submit-btn">Submit Final Word Count</button>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
